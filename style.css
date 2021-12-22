@@ -34,28 +34,28 @@ body > div {
     font-family: 'Consolas', 'Courier New', Courier, monospace;
 }
 
-#display,
-.keys {
+.display,
+.btns {
     border: 4px solid rgb(44, 202, 255);
     border-radius: 10px;
 }
 
-#display {
+.display {
     display: flex;
     justify-content: right;
     align-items: center;
     width: 100%;
     font-weight: bold;
-    font-size: 4em;
+    font-size: 6em;
     background: white;
     margin-bottom: 10px;
 }
 
-#display span {
-    padding-right: 20px;
+.display span {
+    padding: 10px 20px 10px 0;
 }
 
-.keys {
+.btns {
     width: 100%;
     display: flex;
     align-items: center;
@@ -63,33 +63,35 @@ body > div {
     flex-direction: column;
 }
 
-.keys__row {
+.btns__row {
     width: 95%;
     display: flex;
     justify-content: center;    
 }
 
-.keys__row:first-child {
+.btns__row:first-child {
     margin-top: 20px;
 }
 
-.keys__row:last-child {
+.btns__row:last-child {
     margin-bottom: 20px;
 }
 
-.keys__row > button {
+.btns__row > button {
     display: flex;
     justify-content: center;
     flex-grow: 1;
+    width: 25%;
     margin: 4px;
     font-size: 3.5em;
     font-weight: bold;
     background-color: #DDDDDD;
-    padding: 18px 0;
+    padding: 10px 0;
     border-radius: 8px;
     -webkit-transition-duration: 0.25s; /* Safari */
     transition-duration: 0.25s;    
 }
+
 
 button:hover {
     box-shadow: 0 0 5px 5px rgba(0,0,0,0.24), 0 0 10px 0px rgba(0,0,0,0.19);
@@ -103,12 +105,18 @@ button:active {
     transform:scale(0.95, 0.95);
 }
 
-.keys__row .keys__number {
+.btns__row .btns__number {
     background-color: #F5F5F5;
 }
 
-.keys__row .keys__equals {
+.btns__row .btns__clear {
+    background-color: rgb(255, 154, 154);
+    width: 50%;
+}
+
+.btns__row .btns__equals {
     background-color: rgb(44, 202, 255);
+    width: 50%;
 }
 
 #footer {

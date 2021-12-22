@@ -14,33 +14,37 @@
         <h1>CALCULATOR</h1>
     </div>
     <div id="calculator">
-        <div id="display">
-            <span>0</span>
+        <div class="display">
+            <span class="display__output">0</span>
         </div>
-        <div class="keys">
-            <div class="keys__row">
-                <button class="keys__number" type="button">7</button>
-                <button class="keys__number" type="button">8</button>
-                <button class="keys__number" type="button">9</button>
-                <button type="button">/</button>
+        <div class="btns">
+            <div class="btns__row">
+                <button class="btns__clear" type="button">C</button>
+                <button class="btns__back" type="button">&#x232b;</button>
+                <button class="btns__op" data-op="/" type="button">&divide;</button>
             </div>
-            <div class="keys__row">
-                <button class="keys__number" type="button">4</button>
-                <button class="keys__number" type="button">5</button>
-                <button class="keys__number" type="button">6</button>
-                <button type="button">*</button>
+            <div class="btns__row">
+                <button class="btns__number" type="button">7</button>
+                <button class="btns__number" type="button">8</button>
+                <button class="btns__number" type="button">9</button>
+                <button class="btns__op" data-op="*" type="button">&times;</button>
             </div>
-            <div class="keys__row">
-                <button class="keys__number" type="button">1</button>
-                <button class="keys__number" type="button">2</button>
-                <button class="keys__number" type="button">3</button>
-                <button type="button">-</button>
+            <div class="btns__row">
+                <button class="btns__number" type="button">4</button>
+                <button class="btns__number" type="button">5</button>
+                <button class="btns__number" type="button">6</button>
+                <button class="btns__op" data-op="-" type="button">&minus;</button>
             </div>
-            <div class="keys__row">
-                <button class="keys__number" type="button">0</button>
-                <button type="button">.</button>
-                <button class="keys__equals" type="button">=</button>
-                <button type="button">+</button>
+            <div class="btns__row">
+                <button class="btns__number" type="button">1</button>
+                <button class="btns__number" type="button">2</button>
+                <button class="btns__number" type="button">3</button>
+                <button class="btns__op" data-op="+" type="button">&plus;</button>
+            </div>
+            <div class="btns__row">
+                <button class="btns__number" type="button">0</button>
+                <button class="btns__number" type="button">.</button>
+                <button class="btns__equals" type="button">&equals;</button>
             </div>
         </div>
     </div>
