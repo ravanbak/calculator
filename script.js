@@ -1,3 +1,5 @@
+const MAX_OPERAND_DIGITS = 16;
+
 let operand1;
 let operand2;
 let operator;
@@ -108,15 +110,27 @@ function handleNumber(num) {
     }
     
     if (operator) {
-        if (num != '.' || !hasDecimal(operand2)) {
-            operand2 += num
-            if (operand2 === '.') operand2 = '0.';
+        operand2 = appendCharToOperand(operand2, num);
+    } 
+    else {
+        operand1 = appendCharToOperand(operand1, num);
+    }
+}
+
+function appendCharToOperand(operand, char) {
+    if (char == '.' && hasDecimal(operand)) {
+        return operand;
+    }
+    else if (operand.length >= MAX_OPERAND_DIGITS) {
+        return operand;
+    }
+    else {
+        operand += char;
+        if (operand === '.') {
+            operand = '0.';
         }
-    } else {
-        if (num != '.' || !hasDecimal(operand1)) {
-            operand1 += num
-            if (operand1 === '.') operand1 = '0.';
-        }
+        
+        return operand;
     }
 }
 
