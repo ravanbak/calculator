@@ -5,31 +5,16 @@ let result;
 
 init();
 
-const backspace = (s) => s.slice(0, s.length - 1);
-
 const add = (a, b) => a + b;
 const subtract = (a, b) => a - b;
 const multiply = (a, b) => a * b;
 const divide = (a, b) => a / b;
 
+const backspace = (s) => s.slice(0, s.length - 1);
 const hasDecimal = (s) => s.includes('.');
 
-function formatNumber(s) {
-    return removeTrailingZeroesAfterDecimal(parseFloat(s).toFixed(9));
-}
-
-function removeTrailingZeroesAfterDecimal(s) {
-    if (hasDecimal(s)) {
-        while (s.endsWith('0') ||s.endsWith('.')) {
-            s = s.slice(0, s.length - 1);
-        }
-    }
-
-    return s;
-}
-
 function operate(op, a, b) {
-    let f = Object;
+    let f = Function;
     
     switch (op) {
         case '+':
@@ -50,7 +35,7 @@ function operate(op, a, b) {
 }
 
 function init() {
-    addButtonEventHandlers();
+    addEventListeners();
     reset();
     updateDisplay();
 }
@@ -62,71 +47,112 @@ function reset() {
     operand2 = '';
 }
 
-function addButtonEventHandlers() {
-    const numberBtns = document.querySelectorAll('.btns__number')
-    numberBtns.forEach((btn) => btn.addEventListener('click', handleNumber));
+function addEventListeners() {
+    document.addEventListener('keydown', handleCalcButtonPress);
 
-    const operatorBtns = document.querySelectorAll('.btns__op')
-    operatorBtns.forEach((btn) => btn.addEventListener('click', handleOperator));
-
-    const clearBtn = document.querySelector('.btns__clear');
-    clearBtn.addEventListener('click', handleClear);
-
-    const backBtn = document.querySelector('.btns__back');
-    backBtn.addEventListener('click', handleBack);
-
-    const equalsBtn = document.querySelector('.btns__equals');
-    equalsBtn.addEventListener('click', handleEquals);
+    const btns = document.querySelectorAll('button');
+    btns.forEach((btn) => {
+        btn.addEventListener('mousedown', handleCalcButtonPress);
+        btn.addEventListener('transitionend', (e) => transitionFinished(e));
+    });
 }
 
-function handleNumber(e) {
-    if (result) {
-        reset();
+function transitionFinished(e) {
+    if (e.propertyName === 'transform') {
+        e.target.classList.remove('pressed');
+    }
+}
+
+function handleCalcButtonPress(e) {
+    
+    // Handle button and keyboard events.
+    
+    let btn;
+    let key;
+    if (e.type == 'keydown') {
+        btn = document.querySelector(`button[data-key='${e.key}']`);
+        key =e.key;
+    } 
+    else if (e.target.type == 'button') {
+        btn = e.target;
+        key = btn.dataset['key'];
     }
 
-    let btnVal = e.target.textContent;
-    
-    if (operator) {
-        if (btnVal != '.' || !hasDecimal(operand2)) {
-            operand2 += btnVal
-            if (operand2 === '.') operand2 = '0.';
+    if (btn) {
+        btn.classList.toggle('pressed');
+
+        // What kind of button was pressed?
+        if (key == 'Enter') {
+            handleEquals();
         }
-    } else {
-        if (btnVal != '.' || !hasDecimal(operand1)) {
-            operand1 += btnVal
-            if (operand1 === '.') operand1 = '0.';
+        else if (key == 'Backspace') {
+            handleBack();
+        }
+        else if (btn.classList.contains('btns__number')) {
+            handleNumber(key);
+        } 
+        else if (btn.classList.contains('btns__op')) {
+            handleOperator(key);
+        } 
+        else if (key.toUpperCase() == 'C' || btn.classList.contains('btns__clear')) {
+            reset();
         }
     }
 
     updateDisplay();
 }
 
-function handleOperator(e) {
+function handleNumber(num) {
+    if (result) {
+        reset();
+    }
+    
+    if (operator) {
+        if (num != '.' || !hasDecimal(operand2)) {
+            operand2 += num
+            if (operand2 === '.') operand2 = '0.';
+        }
+    } else {
+        if (num != '.' || !hasDecimal(operand1)) {
+            operand1 += num
+            if (operand1 === '.') operand1 = '0.';
+        }
+    }
+}
+
+function handleOperator(op) {
     if (result) {
         let saveResult = result;
         reset();
         
         operand1 = saveResult;
     }
+    else if (operand1 && operator && operand2) {
+        handleEquals();
+        operand1 = result;
+        operand2 = '';
+        result = null;
+    }
     else if (!operand1 || operator) {
         // operand1 not entered, or operator already entered.
         return;
     }
+    else {
+        operand1 = formatNumber(operand1);
+    }
 
-    operator = e.target.dataset['op'];
-    
-    updateDisplay();
+    operator = op;
 }
 
-function handleClear() {
-    reset();
-
-    updateDisplay();
+function handleEquals() {
+    if (operand1 && operator && operand2) {
+        result = formatNumber(operate(operator, parseFloat(operand1), parseFloat(operand2)));
+    }
 }
 
-function handleBack() {
-    // Determine what has been entered so far and remove
-    // the most recent entry.
+function handleBack(e) {
+    // Determine what has been entered so far 
+    // and remove the most recent entry.
     if (operand2) {
         operand2 = backspace(operand2);
 
@@ -140,20 +166,9 @@ function handleBack() {
         return;
 
     }
-
-    updateDisplay();
 }
 
-function handleEquals() {
-    if (!(operand1 && operator && operand2)) return;
-
-    result = operate(operator, parseFloat(operand1), parseFloat(operand2));
-    result = formatNumber(result);
-   
-    updateDisplay();
-}
-
-function getOperatorString(op) {
+function getOperatorDisplayString(op) {
     switch (op) {
         case '/':
             return '\xF7';
@@ -173,7 +188,7 @@ function getDisplayString() {
     
     let s = '';
     if (operand1) s += operand1;
-    if (operator) s += getOperatorString(operator);
+    if (operator) s += getOperatorDisplayString(operator);
     if (operand2) s += operand2;
 
     if (!s) s = '0';
@@ -183,4 +198,23 @@ function getDisplayString() {
 
 function updateDisplay() {
     document.querySelector('.display__output').textContent = getDisplayString();
+}
+
+function formatNumber(s) {
+    return removeTrailingZeroesAfterDecimal(parseFloat(s).toFixed(9));
+}
+
+function removeTrailingZeroesAfterDecimal(s) {
+    if (hasDecimal(s)) {
+        while (s.endsWith('0') || s.endsWith('.')) {
+            s = s.slice(0, s.length - 1);
+
+            if (!hasDecimal(s)) {
+                // Decimal has been removed, stop removing zeroes.
+                break;
+            }
+        }
+    }
+
+    return s;
 }
