@@ -1,4 +1,5 @@
 const MAX_OPERAND_DIGITS = 16;
+const MAX_DECIMAL_DIGITS = 9;
 
 let operand1;
 let operand2;
@@ -121,6 +122,9 @@ function appendCharToOperand(operand, char) {
     if (char == '.' && hasDecimal(operand)) {
         return operand;
     }
+    else if (char == '0' && operand == '0') {
+        return operand;
+    }
     else if (operand.length >= MAX_OPERAND_DIGITS) {
         return operand;
     }
@@ -151,16 +155,13 @@ function handleOperator(op) {
         // operand1 not entered, or operator already entered.
         return;
     }
-    else {
-        operand1 = formatNumber(operand1);
-    }
 
     operator = op;
 }
 
 function handleEquals() {
     if (operand1 && operator && operand2) {
-        result = formatNumber(operate(operator, parseFloat(operand1), parseFloat(operand2)));
+        result = operate(operator, parseFloat(operand1), parseFloat(operand2)).toString();
     }
 }
 
@@ -197,13 +198,26 @@ function getOperatorDisplayString(op) {
 
 function getDisplayString() {
     if (result) {
-        return formatNumber(result);
+        return removeTrailingZeroesAfterDecimal(formatNumber(result));
     }
     
     let s = '';
-    if (operand1) s += operand1;
-    if (operator) s += getOperatorDisplayString(operator);
-    if (operand2) s += operand2;
+
+    if (operand2 || operator) {
+        // operand1 is complete, remove trailing zeroes and/or decimal point
+        s += formatNumber(removeTrailingZeroesAfterDecimal(operand1));
+
+        if (operator) {
+            s += getOperatorDisplayString(operator);
+
+            if (operand2) {
+                s += formatNumber(operand2);
+            }
+        }
+    } 
+    else if (operand1) {
+        s += formatNumber(operand1);
+    }
 
     if (!s) s = '0';
 
@@ -215,7 +229,17 @@ function updateDisplay() {
 }
 
 function formatNumber(s) {
-    return removeTrailingZeroesAfterDecimal(parseFloat(s).toFixed(9));
+    const numberParts = s.split('.');
+
+    s = numberParts[0]; // get the integer portion of the number
+    s = parseFloat(s).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: MAX_OPERAND_DIGITS });
+    
+    if (numberParts.length > 1) {
+        // add the decimal portion of the number
+        s += '.' + numberParts[1];
+    }
+
+    return s;
 }
 
 function removeTrailingZeroesAfterDecimal(s) {
